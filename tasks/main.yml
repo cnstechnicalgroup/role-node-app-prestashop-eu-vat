@@ -1,0 +1,37 @@
+---
+- name: Add system group
+  group: name="{{ system_group }}"
+
+- name: Add system user
+  user: name="{{ system_user }}" group="{{ system_group }}" home="/home/{{ system_user }}"
+
+- name: Create app directory
+  file: path="{{ node_app_root }}" owner="{{ system_user }}" group="{{ system_group }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
+
+- name: Copy aws deploy key
+  action: copy src="{{ node_app_deploy_key }}" dest="/home/{{ system_user }}/.ssh/{{ node_app_name }}" owner="{{ system_user }}" group="{{ system_group }}" mode=0600
+
+- name: gitconfig template
+  template: src=gitconfig.j2 dest="/home/{{ system_user }}/.gitconfig" owner="{{ system_user }}" group="{{ system_group }}"
+
+- name: Create installation folder (node_app_root)
+  file: path="{{ node_app_root }}" owner="{{ system_user }}" group="{{ system_group }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
+
+- name: git checkout repository for site
+  git: repo="{{ node_app_git_repo }}"
+       dest="{{ node_app_root }}"
+       ssh_opts="-o StrictHostKeyChecking=no -vvvv"
+       key_file="/home/{{ system_user}}/.ssh/{{ node_app_name }}"
+       accept_hostkey=True
+  sudo: yes
+  sudo_user: "{{ system_user }}"
+
+- name: Create app config file
+  template: src=config.js.j2 dest="{{ node_app_root }}/config.js" owner="{{ system_user }}" group="{{ system_user }}"
+
+- name: Install all node modules
+  npm: path="{{ node_app_root }}"
+
+- name: Generate exposed script
+  template: src=apply_tax_rules.php.j2 dest="{{ node_app_exposed }}" owner="{{ system_user }}" group="{{ system_group }}"
+  when: node_app_exposed is defined

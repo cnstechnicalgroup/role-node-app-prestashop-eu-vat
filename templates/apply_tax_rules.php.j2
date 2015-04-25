@@ -1,0 +1,10 @@
+<?php
+  // Apply EU Tax Rules
+  $whitelist = array({{ node_app_whitelist }});
+  if (in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $whitelist)) {
+    exec('cd {{ node_app_root }} && {{ node_app_execute }} > /dev/null 2>/dev/null &' );
+    echo "Applying tax rules. Please check product pricing in a few moments.";
+  } else {
+    echo "This is not the page you are looking for...";
+  }
+?>

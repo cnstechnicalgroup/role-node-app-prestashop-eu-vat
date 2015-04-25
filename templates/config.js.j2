@@ -1,0 +1,15 @@
+'use strict';
+
+var config = {
+    db_config: {
+        host: '{{ node_app_db_host }}',
+        user: '{{ node_app_db_user }}',
+        password: '{{ node_app_db_password }}',
+        database: '{{ node_app_db_name }}',
+        multipleStatements: true
+    },
+    // This is found in Localization > Tax Rules (ID)
+    tax_rules_group: {{ node_app_db_tax_rules_group }}
+}
+
+module.exports.config = config;
