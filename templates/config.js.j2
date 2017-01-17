@@ -1,8 +1,12 @@
 'use strict';
 
 var config = {
-    db_config: {
+   db_config: {
+        {% if item %}
+        host: '{{ item.value }}',
+        {% else %}
         host: '{{ node_app_db_host }}',
+        {% endif %}
         user: '{{ node_app_db_user }}',
         password: '{{ node_app_db_password }}',
         database: '{{ node_app_db_name }}',

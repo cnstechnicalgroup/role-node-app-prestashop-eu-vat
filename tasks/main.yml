@@ -8,8 +8,16 @@
 - name: Create app directory
   file: path="{{ node_app_root }}" owner="{{ system_user }}" group="{{ system_group }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
 
+- name: Ensure user .ssh directory exists
+  file: path="/home/{{ system_user }}/.ssh" owner="{{ system_user }}" group="{{ system_group }}" state=directory
+
 - name: Copy aws deploy key
-  action: copy src="{{ node_app_deploy_key }}" dest="/home/{{ system_user }}/.ssh/{{ node_app_name }}" owner="{{ system_user }}" group="{{ system_group }}" mode=0600
+  template: 
+    src: "deploy-key.j2"
+    dest: "/home/{{ system_user }}/.ssh/{{ node_app_name }}"
+    owner: "{{ system_user }}"
+    group: "{{ system_group }}"
+    mode: 0600
 
 - name: gitconfig template
   template: src=gitconfig.j2 dest="/home/{{ system_user }}/.gitconfig" owner="{{ system_user }}" group="{{ system_group }}"
@@ -26,8 +34,13 @@
   sudo: yes
   sudo_user: "{{ system_user }}"
 
+- name: Create nodeappconfig direcotry
+  file: path="/home/{{ system_user }}/nodeappconfig" owner="{{ system_user }}" group="{{ system_group }}" state=directory
+
 - name: Create app config file
-  template: src=config.js.j2 dest="{{ node_app_root }}/config.js" owner="{{ system_user }}" group="{{ system_user }}"
+  template: src=config.js.j2 dest="/home/{{ system_user }}/nodeappconfig/config-{{ item.key }}.js" owner="{{ system_user }}" group="{{ system_user }}"
+  with_dict: "{{ db_hosts }}"
+  when: db_hosts is defined 
 
 - name: Install all node modules
   npm: path="{{ node_app_root }}"
