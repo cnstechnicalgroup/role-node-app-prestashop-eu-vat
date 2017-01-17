@@ -43,7 +43,7 @@ GPLv2
 Author Information
 ------------------
 
-Created by [Sam Morrison](https://www.twitter.com/samcns)
+Sam Morrison
 
 Examples
 --------

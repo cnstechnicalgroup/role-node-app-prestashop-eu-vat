@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: cnstechnicalgroup
+  description: Ansible role to install the prestashop-eu-vat nodejs app into a defined folder, runs npm install to install dependencies defined in the project's package.json, and optionally creates a script to expose the app to a whitelisted set of clients.
+  company: CNS Technical Group, Inc.
+  license: GPL2
+  min_ansible_version: 2.2
+  categories:
+  - prestashop
+dependencies: []
